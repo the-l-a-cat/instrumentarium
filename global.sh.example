@@ -1,0 +1,67 @@
+# ---------------------------------------------------------------------------- #
+#                                                                              #
+#     Agava Dedicated/Colocation Instrumentarium toolset.                      #
+#                                                                              #
+#     This is the global configuration file.                                   #
+#                                                                              #
+# ---------------------------------------------------------------------------- #
+
+# -------- Remember that you should escape substitution characters
+# -------- in double quotes.
+
+my_ping='ping -l3 -c3 -w1 -q '
+
+my_ssh='
+
+    ssh
+        -T
+        -o StrictHostKeyChecking=no
+        -o PasswordAuthentication=no
+        -o NumberOfPasswordPrompts=0
+        -o GlobalKnownHostsFile=/dev/null
+        -o UserKnownHostsFile=/dev/null
+        -o LogLevel=QUIET
+        -o ConnectTimeout=12
+
+'
+
+# Do we need a proxy to connect to the server database server? Use if it is
+# not accessible from the localhost (due to either routing or permissions.
+my_db_use_ssh="YES" 
+my_db_ssh_channel="mysql@gate.example.com"
+
+# Which host holds the server database?
+my_db_host="mysql.example.com"
+my_db_user="minister" 
+my_db_password="secret"
+my_db_database="servers.database"
+
+my_db_ssh_invocation="
+    mysql
+        --user=$my_db_user
+        --password=$my_db_password
+        --host=$my_db_host
+        --silent
+
+"
+
+my_db_command="
+    SELECT
+
+          host_name
+        , host_address
+        
+        FROM
+          $my_base
+
+        ORDER BY host_name
+        ASC ;   
+
+"
+
+my_ns_server="8.8.8.8"
+
+my_snmp_version=1
+my_snmp_1_community="public"
+
+

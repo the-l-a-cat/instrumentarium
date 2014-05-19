@@ -1,0 +1,91 @@
+
+# ---------------------------------------------------------------------------- #
+#                                                                              #
+#     Agava Dedicated/Colocation Instrumentarium toolset.                      #
+#                                                                              #
+#     Why did it never occur to you all that this is what we should            #
+#     think of in the first place?                                             #
+#                                                                              #
+# ---------------------------------------------------------------------------- #
+
+
+* eternal_truth.sh 
+
+    Connect to the administrative database somehow and list all the servers we
+    are supposed to administer.
+
+    Includes a -r N key that only gives you N random servers. (That is useful
+    if you wish to make a quick test of a command before running it in the
+    wild.)
+
+* get-name.sh 
+    Resolves a given IP address to a PTR in a loop. Give it a list of IP
+    addresses on stdin and it will ask a certain pre-defined DNS server for a
+    PTR record for you.  
+
+* hundred_hands.sh
+
+    Takes a source file of form "server_id \t server_address" as stdin and any
+    command as its arguments; runs these commands on all the hosts, printing
+    to your screen.
+
+    A small number of keys is available, such as -c (makes the output more 
+    concise).
+
+* get_me_a_pkg.sh
+
+    Put this on a FreeBSD host and it would automatically find and instal a
+    latest available version of a package you specify. This allows for easy
+    installation of a package on a larger number of different versions of
+    FreeBSD systems.
+
+    =   Requires: netrc file that would allow automatic connection to the
+        FreeBSD archives. You may take the example netrc I provide and put it
+        in your ~ as .netrc (with the leading dot included.)
+
+* snmp-filter.sh
+
+    Takes a server source file as stdin and a list of predefined checks as
+    arguments. Speaks check results for every server.
+
+* categorize.sh
+
+    Similar to the previous in principle but allows for arbitrary command
+    execution via SSH. Splits a source file on a bunch of smaller ones.
+
+* minister.sh
+
+    Transforms a directory into a tarball and unfolds it on any number of
+    remote servers. Would also run a corresponding post-install script.
+
+    Use with care. Help available if ran with zero arguments.
+
+
+# ----- A few examples: 
+
+    % ~/code/instrumentarium/eternal_truth.sh |
+        ~/code/instrumentarium/hundred_hands.sh -c "sudo smartd -V | head -n1"
+    # This one would display smartd version installed on every colocation
+    # server we administer.
+
+    % ~/code/instrumentarium/minister.sh -c random/bsd-basics -u random/bsd-basics 
+    # Take a directory named random/bsd-basics and make a tarball from it.
+    # Then put it on every server specified in a file named
+    # random/bsd-basics.source and untar it in / 
+    # Afterwards, run random/bsd-basics.post_proc.sh on each of those servers,
+    # if such a file is present.
+
+    % cat bsd-basics.source | ~/code/instrumentarium/hundred_hands.sh sudo \
+        /root/get_me_a_pkg.sh smartmontools
+    # Install the latest possible smartmontools package on every FreeBSD
+    # machine listed in bsd-basics.source. Makes an assumption that
+    # get_me_a_pkg.sh is already present on each of those servers.
+    
+    % ~/code/instrumentarium/eternal_truth.sh |
+        tail |
+        ~/code/instrumentarium/snmp-filter.sh --csv \
+        operating-system version-major machine-architecture default_ip raid
+    # List a number of parameters for the last ten of our servers.
+
+
+
